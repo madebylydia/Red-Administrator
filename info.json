@@ -1,0 +1,7 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Cog-Creators/Red-DiscordBot/V3/develop/schema/red_cog_repo.schema.json",
+    "author": ["Predeactor"],
+    "description": "Cog for administrating a Red Discord Bot instance. Get your own instance at https://discord.red",
+    "install_msg": "Thank for installing my cogs.\nPlease not that this cog will remaing unapproved by Cog Creators as long as I want to. I also do not provide support if I do not want to. It's all up to me.",
+    "short": "Cog for administrating a Red Discord Bot instance."
+}

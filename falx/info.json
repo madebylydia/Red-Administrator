@@ -1,0 +1,10 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Cog-Creators/Red-DiscordBot/V3/develop/schema/red_cog.schema.json",
+    "author": ["Predeactor"],
+    "description": "A powerful guild approver.",
+    "end_user_data_statement": "This cog do not store no data.",
+    "install_msg": "Thank for installing `Falx`. Check out commands with `[p]falx`.",
+    "short": "Guild whitelisting made easy, and cool.",
+    "tags": ["guild", "manager", "dev"],
+    "min_python_version": [3, 8, 0]
+}
