@@ -11,6 +11,7 @@ class GuildData(TypedDict):
     added_at: int
     author: str
     reason: str
+    is_brut: bool
 
 
 class Allowance:
@@ -27,6 +28,7 @@ class Allowance:
         added_at: int,
         author: str,
         reason: str,
+        is_brut: bool,
         config_instance: Config,
     ) -> None:
         self.guild_id: int = guild_id
@@ -34,6 +36,8 @@ class Allowance:
         self.author: str = author
         self.added_at: int = added_at
         self.reason: str = reason
+
+        self.is_brut: bool = is_brut
 
         self.__config: Config = config_instance
 
@@ -92,12 +96,15 @@ class Allowance:
         """
         Save changes to config.
         """
+        if self.is_brut:
+            self.is_brut = False
         await self.__config.guild_from_id(self.guild_id).set_raw(
             value={
                 "is_allowed": self.is_allowed,
                 "author": self.author,
                 "added_at": self.added_at,
                 "reason": self.reason,
+                "is_brut": self.is_brut,
             }
         )
         return True
@@ -109,6 +116,7 @@ class Allowance:
             "author": self.author,
             "added_at": self.added_at,
             "reason": self.reason,
+            "is_brut": self.is_brut,
         }
 
     @classmethod
@@ -122,6 +130,7 @@ class Allowance:
             author=data["author"],
             added_at=data["added_at"],
             reason=data["reason"],
+            is_brut=data["is_brut"],
             config_instance=config_instance,
         )
 
@@ -132,13 +141,14 @@ class Allowance:
 
         This will first pull data from Config then return the class.
         """
-        data = await config_instance.guild(guild).all()
+        data: GuildData = await config_instance.guild(guild).all()
         return cls(
             guild_id=guild.id,
             is_allowed=data["is_allowed"],
             author=data["author"],
             added_at=data["added_at"],
             reason=data["reason"],
+            is_brut=data["is_brut"],
             config_instance=config_instance,
         )
 
@@ -149,12 +159,13 @@ class Allowance:
 
         This will first pull data from Config then return the class.
         """
-        data = await config_instance.guild_from_id(guild_id).all()
+        data: GuildData = await config_instance.guild_from_id(guild_id).all()
         return cls(
             guild_id=guild_id,
             is_allowed=data["is_allowed"],
             author=data["author"],
             added_at=data["added_at"],
             reason=data["reason"],
+            is_brut=data["is_brut"],
             config_instance=config_instance,
         )

@@ -5,7 +5,12 @@ from typing import Optional, Union
 import discord
 from redbot.core import Config, commands
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, bold, inline, humanize_number
+from redbot.core.utils.chat_formatting import (
+    bold,
+    humanize_list,
+    humanize_number,
+    inline,
+)
 
 from .abc import CompositeMetaClass
 from .commands import Commands
@@ -18,7 +23,13 @@ DEFAULT_LEAVING_TEXT = (
     "I will be leaving your server until you get whitelisted, then you'll be able to invite "
     "me again!"
 )
-DEFAULT_GUILD_SETTINGS = {"is_allowed": False, "author": None, "added_at": None, "reason": None}
+DEFAULT_GUILD_SETTINGS = {
+    "is_allowed": False,
+    "author": None,
+    "added_at": None,
+    "reason": None,
+    "is_brut": True,
+}
 DEFAULT_GLOBAL_SETTINGS = {
     "notification_channel": None,
     "leaving_message": DEFAULT_LEAVING_TEXT,
@@ -40,6 +51,8 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
         self.config.register_global(**DEFAULT_GLOBAL_SETTINGS)
         self.config.register_guild(**DEFAULT_GUILD_SETTINGS)
         self.bot: Red = bot
+
+        self._invite_perm: int = 0
         super().__init__(*args, **kwargs)
 
     def get_approve_color(self, left_guild: bool) -> discord.Color:
@@ -68,7 +81,7 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
 
     def generate_invite(self, guild_id: Optional[Union[str, int]] = None) -> str:
         url = discord.utils.oauth_url(
-            self.bot.user.id, permissions=discord.Permissions(8), scopes=("bot",)
+            self.bot.user.id, permissions=discord.Permissions(self._invite_perm)
         )
         if guild_id:
             url += "&guild_id=" + str(guild_id)
@@ -133,7 +146,7 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
         )
         embed.add_field(
             name="Information",
-            value=(f"Name: {guild.name}\nID: {guild.id}\nOwner: {str(guild.owner)}"),
+            value=f"Name: {guild.name}\nID: {guild.id}\nOwner: {str(guild.owner)}",
         )
         embed.add_field(name="Member count", value=f"{guild.member_count} members.")
         embed.set_thumbnail(url=guild.icon_url)
@@ -162,7 +175,12 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
             guild = guild.id
         return await Allowance.from_guild_id(guild, self.config)
 
+    async def setup_class(self):
+        # noinspection PyProtectedMember
+        self._invite_perm = await self.bot._config.invite_perm()
+
 
 def setup(bot: Red):
     falx = Falx(bot)
     bot.add_cog(falx)
+    bot.loop.create_task(falx.setup_class())

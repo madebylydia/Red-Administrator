@@ -1,7 +1,6 @@
 from abc import ABCMeta
 from datetime import datetime
 from json import dumps
-from typing import Tuple
 
 import discord
 from redbot.core import commands
@@ -21,15 +20,20 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         """
 
     @falx.command(name="alter", aliases=["reason"])
-    async def change_reason(self, ctx: commands.Context, guild_id: str, *, new_reason: str):
+    async def change_reason(self, ctx: commands.Context, guild_id: int, *, new_reason: str):
         """
         Change the reason of a guild that has been allowed.
         """
-
-        await ctx.send("Done. Reason altered.")
+        allowance = await Allowance.from_guild_id(guild_id, self.config)
+        if allowance.is_brut:
+            await ctx.send("This guild was never approved or refused.")
+            return
+        allowance.reason = new_reason
+        await allowance.save()
+        await ctx.send("Done. Reason modified.")
 
     @falx.command(name="check")
-    async def checker(self, ctx: commands.Context, guild_id: int):
+    async def check_guild_status(self, ctx: commands.Context, guild_id: int):
         """
         Check if a guild is added to the list.
         """
@@ -40,6 +44,9 @@ class Commands(MixinMeta, metaclass=ABCMeta):
             if is_joined
             else f"I am not operating in this guild{' yet' if allowance.is_allowed else ''}."
         )
+        if allowance.is_brut:
+            await ctx.send(f"This guild was never approved before.\n{joined}")
+            return
         await ctx.send(
             f"This guild is {'allowed' if allowance.is_allowed else 'refused'}.\n"
             f"Reason: {allowance.reason}\n"
@@ -54,12 +61,11 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         """
         guild_allowance = await self.maybe_get_guild(guild_id)
         has_been_added = await guild_allowance.allow_guild(ctx.author, reason)
-        if has_been_added:
-            await ctx.send(
-                f"Done. Guild added.\n<{self.generate_invite(guild_id)}>"
-                if has_been_added
-                else "Done. Guild has not been added."
-            )
+        await ctx.send(
+            f"Done. Guild added.\n<{self.generate_invite(guild_id)}>"
+            if has_been_added
+            else "Done. Guild was already added."
+        )
 
     @falx.command(name="geninvite", aliases=["gen", "geninv", "invite", "inv"])
     async def generate_invite_for_guild(self, ctx: commands.Context, guild_id: int):
@@ -80,6 +86,9 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         Remove a guild from allowed guilds.
         """
         guild_allowance = await self.maybe_get_guild(guild_id)
+        if guild_allowance.is_brut:
+            await ctx.send("This guild was never added before.")
+            return
         has_been_removed = await guild_allowance.disallow_guild(ctx.author, reason)
         await ctx.send(
             "Done. Guild removed." if has_been_removed else "Done. Guild was already removed."
@@ -123,7 +132,7 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         async with ctx.typing():
             for guild in self.bot.guilds:
                 guild_allowance = await Allowance.from_guild(guild, self.config)
-                guild_allowance.allow_guild(str(self.bot.user), "Automatic addition")
+                await guild_allowance.allow_guild(str(self.bot.user), "Automatic addition")
                 has_been_added += 1
         await ctx.send(
             f"Done. {has_been_added} guild{'s' if has_been_added != 1 else ''} has been added."
@@ -146,7 +155,10 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         else:
             await self.config.notification_channel.clear()
         await ctx.send(
-            f"The channel has been changed from {inline(str(notification_channel))} to {inline(str(channel.id) if channel else 'None')}."
+            (
+                f"The channel has been changed from {inline(str(notification_channel))} "
+                f"to {inline(str(channel.id) if channel else 'None')}."
+            )
         )
 
     @falx.command(name="settings")
@@ -162,10 +174,11 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         """
         Change/Reset the message sent to the guild's owner when leaving a guild.
 
-        You can use these variables in your message and they'll be automatically changed into their corresponding values.
+        You can use these variables in your message and they'll be automatically changed into their corresponding
+        values.
 
-        `bot_name`: The bot's name.
-        `owners_name`: A list with owner's name + discriminator.
+        `$bot_name`: The bot's name.
+        `$owners_name`: A list with owner's name + discriminator.
         """
         if not new_message:
             await self.config.leaving_message.clear()
@@ -182,7 +195,7 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         """
         Tell if Falx should remove the guild from whitelist when leaving the guild.
 
-        Be default `True`
+        By default `True`
         """
         await self.config.autoremove.set(activate)
         await ctx.send(

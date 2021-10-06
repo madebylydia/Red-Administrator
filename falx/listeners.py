@@ -3,9 +3,9 @@ from contextlib import suppress
 
 import discord
 from redbot.core import commands
-from .falxclass import Allowance
 
 from .abc import MixinMeta
+from .falxclass import Allowance
 
 
 class Listeners(MixinMeta, metaclass=ABCMeta):
