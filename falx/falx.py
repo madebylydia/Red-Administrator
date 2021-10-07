@@ -19,9 +19,9 @@ from .listeners import Listeners
 
 DEFAULT_LEAVING_TEXT = (
     "Someone on your server invited me ($bot_name) but your server is not whitelisted. "
-    "In order to add me in your server, you require to contact my owner.\nFor that reason, "
-    "I will be leaving your server until you get whitelisted, then you'll be able to invite "
-    "me again!"
+    "In order to add me in your server, you are required to contact my owner.\nFor that "
+    "reason, I will be leaving your server until you get whitelisted, then you'll be able to "
+    "invite me again!"
 )
 DEFAULT_GUILD_SETTINGS = {
     "is_allowed": False,
@@ -42,8 +42,9 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
     Automatic guild manager.
 
     This cog act as a guild approve system. Only the bot's owner(s) can use these commands. Each guild must be
-    whitelisted before inviting the bot, otherwise the bot automatically leave the server. If the bot leave a guild
-    that has been whitelisted before, their guild will be removed from the whitelist and will require a new validation.
+    whitelisted before inviting the bot, otherwise the bot will automatically leave the server. If the bot leaves
+    a guild that has been whitelisted before, their guild will be removed from the whitelist and will require a
+    new validation.
     """
 
     def __init__(self, bot: Red, *args, **kwargs):
@@ -121,7 +122,7 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
             embed.set_image(url=guild.splash_url)
         embed.set_footer(
             text=(
-                "This guild has been automatically left since it wasn't been approved."
+                "This guild was left automatically as it hasn't been approved."
                 if not is_accepted
                 else "This guild was approved."
             ),
