@@ -174,7 +174,7 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         """
         Change/Reset the message sent to the guild's owner when leaving a guild.
 
-        You can use these variables in your message and they'll be automatically changed into their corresponding
+        You can use these variables in your message and they'll automatically change into their corresponding
         values.
 
         `$bot_name`: The bot's name.
