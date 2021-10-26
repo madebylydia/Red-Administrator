@@ -1,10 +1,10 @@
 {
     "$schema": "https://raw.githubusercontent.com/Cog-Creators/Red-DiscordBot/V3/develop/schema/red_cog.schema.json",
     "author": ["Predeactor"],
-    "description": "A powerful guild approver.",
+    "description": "Ban/Hackban made remotely.",
     "end_user_data_statement": "This cog does not store any data about users.",
-    "install_msg": "Thank for installing `Falx`. Check out commands with `[p]falx`.",
-    "short": "Guild whitelisting made easy, and cool.",
-    "tags": ["guild", "manager", "dev"],
+    "install_msg": "Thank for installing `RemoteBan`. Check out commands with `[p]rban`.",
+    "short": "Ban/Hackban made remotely.",
+    "tags": ["ban", "mod", "moderator", "moderation", "hackban", "manager", "dev"],
     "min_python_version": [3, 8, 0]
 }

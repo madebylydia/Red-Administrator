@@ -22,6 +22,10 @@ This cog is meant for servers managers, it is NOT made for middle/big bots and i
 
 # Follow the project
 
+https://discord.gg/aPVupKAxxP
+
+Join my Discord server
+
 https://predeactor.notion.site/825b3ff3a101458fa8003826fe0a4988
 
 Updates are available here, on Notion.
