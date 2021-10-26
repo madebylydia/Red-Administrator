@@ -154,7 +154,7 @@ class RemoteBan(commands.Cog):
             await ctx.author.send(bold("NO KEY PASS RECEIVED - REEXECUTE THE COMMAND."))
             return False
         if message.content == base64.b64decode(
-            b"SSBoZXJlYnkgYWxsb3cgdG8gYWRkIGV4dGVybmFsIHVzZXJzIHRvIHRoZSBjb2csIFJlbW90ZUJhbiwgYW5kIGFncmVlIHRvIGJlaW5nIHVuYWJsZSB0byBibGFtZSB0aGUgY3JlYXRvciBvZiB0aGUgY29nIFJlbW90ZUJhbiBmb3IgZGFtYWdlIGNhdXNlZCBieSB0aGUgY29nIHRvIERpc2NvcmQgc2VydmVycy4"
+            b'SSBoZXJlYnkgYWxsb3cgdG8gYWRkIGV4dGVybmFsIHVzZXJzIHRvIHRoZSBjb2csIFJlbW90ZUJhbiwgYW5kIGFncmVlIHRvIGJlaW5nIHVuYWJsZSB0byBibGFtZSB0aGUgY3JlYXRvciBvZiB0aGUgY29nIFJlbW90ZUJhbiBmb3IgZGFtYWdlIGNhdXNlZCBieSB0aGUgY29nIHRvIERpc2NvcmQgc2VydmVycy4='
         ).decode("utf-8"):
             self.__has_accepted_conditions = True
             await ctx.author.send(
