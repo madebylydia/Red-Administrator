@@ -1,4 +1,4 @@
-Red-DiscordBot==3.4.14
+Red-DiscordBot
 black
 isort
 discord
