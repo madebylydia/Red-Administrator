@@ -14,7 +14,17 @@ If you want to know where your bot is, where you want your bot to be invited, or
 It acts as a whitelist only, you add a guild with a reason and done!
 When your bot leave the guild, it gets removed from the whitelist or not if you want to, it's all up to you! Ideal to manage where your bot will be and working with a team.
 
+### RemoteBan
+
+Ban or hackban users you do not want in the guilds you manage by running a command in any servers you are in.
+Using this cog, you can ban anyone you want, and anywhere. This will give you a nice looking result summary telling you what happened during processing bans or unban.
+This cog is meant for servers managers, it is NOT made for middle/big bots and is highly discouraged to install this cog.
+
 # Follow the project
+
+https://discord.gg/aPVupKAxxP
+
+Join my Discord server
 
 https://predeactor.notion.site/825b3ff3a101458fa8003826fe0a4988
 

@@ -115,7 +115,7 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
         percentage = bots / guild.member_count * 100
         embed.add_field(
             name="Members count",
-            value=f"{guild.member_count} members.\n{humans} humans.\n{bots} bots.\nRatio: {percentage}% of bots.",
+            value=f"{guild.member_count} members.\n{humans} humans.\n{bots} bots.\nRatio: {round(percentage)}% of bots.",
         )
         embed.set_thumbnail(url=guild.icon_url)
         if guild.splash:
