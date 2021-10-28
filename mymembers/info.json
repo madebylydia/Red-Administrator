@@ -1,0 +1,10 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Cog-Creators/Red-DiscordBot/V3/develop/schema/red_cog.schema.json",
+    "author": ["Predeactor"],
+    "description": "Information about members",
+    "end_user_data_statement": "This cog does not store any data about users in a persistent way, but provides all properties of one or more members of a guild when requested. When possible, these information are deleted after being viewed, but can be requested anytime.",
+    "install_msg": "Thank for installing `MyMembers`. Check out commands with `[p]mymembers`.\nPlease, do not forget to respect member's privacy.",
+    "short": "Information about members",
+    "tags": ["members", "manager", "dev", "admin", "mod"],
+    "min_python_version": [3, 8, 0]
+}
