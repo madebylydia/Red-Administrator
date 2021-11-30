@@ -106,10 +106,13 @@ class Commands(MixinMeta, metaclass=ABCMeta):
             guilds.append(Allowance.from_dict(guild[1], self.config))
         msg = "These guilds has been whitelisted:\n"
         for guild in guilds:
+            possible_guild = self.bot.get_guild(guild.guild_id)
             if guild.is_allowed:
                 msg += (
-                    f"\nGuild ID: {guild.guild_id}\nReason: {guild.reason}\n"
-                    f"Since: {datetime.fromtimestamp(guild.added_at) if guild.added_at else 'Never'}\n"
+                    f"\nGuild ID: {guild.guild_id} "
+                    f"({inline(possible_guild.name) if possible_guild else inline('Guild not found')})"
+                    f"\nReason: {guild.reason}\nSince: "
+                    f"{datetime.fromtimestamp(guild.added_at) if guild.added_at else 'Never'}\n"
                     f"By: {guild.author}\n"
                 )
         for message_part in pagify(msg):
