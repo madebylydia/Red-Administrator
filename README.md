@@ -5,18 +5,6 @@ Created by Predeactor, supported by Red-DiscordBot's community members.
 
 Repository released under MIT License.
 
-# Leaving Red
-
-I just need fresh air, you don't have to worry about me leaving :) (also need to... "reconfigure" myself)
-
-Here is a screenshot of my roles before I left Red, in case I'll be coming back and I especially ask for it.
-
-<div align="center">
-    <img src="https://i.imgur.com/wrHZCcR.png" alt="Roles" />
-</div>
-
-Santa might come back this year... *insert pair of googles here*
-
 # Cogs
 
 ### Falx
