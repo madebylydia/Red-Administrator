@@ -151,7 +151,7 @@ class MyMembers(commands.Cog):
             "max_members": guild.max_members,
             "max_presences": guild.max_presences,
             "max_video_channel_users": guild.max_video_channel_users,
-            "guild_is_unavailable": not guild.unavailable,
+            "guild_is_unavailable": guild.unavailable,
             "bot_chuncked_guild": guild.chunked,
             "bot_joined_at": guild.me.joined_at.isoformat(timespec="seconds"),
             "user_joined_at": user_in_guild.joined_at.isoformat(timespec="seconds"),
