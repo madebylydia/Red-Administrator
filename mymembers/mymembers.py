@@ -307,7 +307,7 @@ class MyMembers(commands.Cog):
         if len(embeds) > 1:
             # We must process JSON objects and assemble them together, for the sake of message
             # editing when we will use the menu
-            
+
             if include_json:
                 total_data = {
                     "data": [],
@@ -323,9 +323,7 @@ class MyMembers(commands.Cog):
                     MembersPage(embeds, json=total_data), timeout=300, delete_message_after=True
                 )
             else:
-                menu = MenuPages(
-                    MembersPage(embeds), timeout=300, delete_message_after=True
-                )
+                menu = MenuPages(MembersPage(embeds), timeout=300, delete_message_after=True)
             await to_del.delete()
             await menu.start(ctx)
         else:

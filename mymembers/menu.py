@@ -30,13 +30,9 @@ class MembersPage(menus.ListPageSource):
                 return {
                     "content": entry["content"],
                     "embed": entry["embed"],
-                    "file": text_to_file(self.__json["data"], filename=self.__json["filename"])
+                    "file": text_to_file(self.__json["data"], filename=self.__json["filename"]),
                 }
             else:
-                return {
-                    "content": entry["content"],
-                    "embed": entry["embed"],
-                    "file": None
-                }
+                return {"content": entry["content"], "embed": entry["embed"], "file": None}
         finally:
             self.__was_initialized = True
