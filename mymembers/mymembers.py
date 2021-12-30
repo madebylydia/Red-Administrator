@@ -294,6 +294,12 @@ class MyMembers(commands.Cog):
         """
         Obtain information about an user from this guild.
         """
+        if not users:
+            raise commands.UserFeedbackCheckFailure("You need to specify at least one user.")
+        if len(users) >= 2 and include_json:
+            raise commands.UserFeedbackCheckFailure(
+                "You cannot include JSON information when requesting more than one user."
+            )
         to_del = await ctx.send("Please wait, getting data...")
         embeds: List[UserInfosResult] = []
         for user in users:
