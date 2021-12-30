@@ -307,20 +307,25 @@ class MyMembers(commands.Cog):
         if len(embeds) > 1:
             # We must process JSON objects and assemble them together, for the sake of message
             # editing when we will use the menu
-            total_data = {
-                "data": [],
-                "filename": f"report-from-{str(self.bot.user)}-to-{str(ctx.author)}-at-{datetime.now().isoformat(timespec='seconds')}.json",
-            }
+            
             if include_json:
+                total_data = {
+                    "data": [],
+                    "filename": f"report-from-{str(self.bot.user)}-to-{str(ctx.author)}-at-{datetime.now().isoformat(timespec='seconds')}.json",
+                }
                 for user_data in embeds:
                     json_as_string = user_data["json"]
                     json_as_dict = json.loads(json_as_string)
                     total_data["data"].append(json_as_dict)
                 total_data = json.dumps(total_data, sort_keys=True, indent=2)
 
-            menu = MenuPages(
-                MembersPage(embeds, json=total_data), timeout=300, delete_message_after=True
-            )
+                menu = MenuPages(
+                    MembersPage(embeds, json=total_data), timeout=300, delete_message_after=True
+                )
+            else:
+                menu = MenuPages(
+                    MembersPage(embeds), timeout=300, delete_message_after=True
+                )
             await to_del.delete()
             await menu.start(ctx)
         else:
