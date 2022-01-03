@@ -1,6 +1,6 @@
 import json
-from datetime import datetime
-from typing import Dict, List
+from datetime import date, datetime
+from typing import Dict, List, Optional
 
 import discord
 from redbot.core import Config, commands
@@ -24,9 +24,10 @@ DEFAULT_GUILD_CONFIG = {
     "obtain_json": True,
     "timestamp_style": "F",
 }
+DEFAULT_MEMBER_CONFIG = {"edited_joined_at": None}
 
 
-class TimestampConverter(commands.Converter):
+class TimestampStyleConverter(commands.Converter):
     async def convert(self, ctx: commands.Context, argument: str) -> str:
         if argument not in ("t", "T", "d", "D", "f", "F", "R"):
             raise commands.BadArgument(
@@ -34,6 +35,21 @@ class TimestampConverter(commands.Converter):
                 "'R'."
             )
         return argument
+
+
+class TimestampConverter(commands.Converter):
+    async def convert(self, ctx: commands.Context, argument: int) -> datetime:
+        try:
+            time = datetime.fromtimestamp(int(argument))
+        except TypeError:
+            raise commands.BadArgument(
+                error("This argument is incorrect, it must be a timestamp.")
+            )
+        if int(argument) < 1431381600:
+            raise commands.BadArgument(
+                error("This is impossible, Discord was created the 13 May 2015!")
+            )
+        return time
 
 
 class MyMembers(commands.Cog):
@@ -52,6 +68,7 @@ class MyMembers(commands.Cog):
             allow_old=False,
         )
         self.config.register_guild(**DEFAULT_GUILD_CONFIG)
+        self.config.register_member(**DEFAULT_MEMBER_CONFIG)
 
         self._timestamp_cache: Dict[int, str] = {}
 
@@ -212,8 +229,15 @@ class MyMembers(commands.Cog):
         try:
             guilds_lookup = member.mutual_guilds
         except AttributeError:
-            # Edge case where the user requets infos for the bot itself.
+            # Edge case where the user request infos for the bot itself.
             guilds_lookup = self.bot.guilds
+
+        # Get user's edited joined at date, if applicable.
+        edited_joined_at = await self.config.member(member).edited_joined_at()
+        has_edited_joined_at = bool(edited_joined_at)
+        if has_edited_joined_at:
+            member.joined_at = datetime.fromtimestamp(edited_joined_at)
+
         user_flags = (
             humanize_list(
                 [f"{inline(val.name)}" for val in member.public_flags.all()],
@@ -227,11 +251,11 @@ class MyMembers(commands.Cog):
             f"Contain JSON informations: {str(get_json)}"
         )
         msg_content = (
-            f"User has joined the guild at: {await self.get_timestamp_value(member.joined_at, member.guild) if member.joined_at else inline('CANNOT DETERMINE DATE')}\n"
+            f"User has joined the guild at: {await self.get_timestamp_value(member.joined_at, member.guild) if member.joined_at else inline('CANNOT DETERMINE DATE')} {'(Edited)' if has_edited_joined_at else ''}\n"
             f"User was created at: {await self.get_timestamp_value(member.created_at, member.guild)}\n"
             "Difference between guild joined/account creation "
             f"{bold(str((member.joined_at - member.created_at).days)) if member.joined_at else inline('CANNOT DETERMINE DATE')} days.\n"
-            f"Since today, user is in the guild since {bold(str((datetime.now() - member.joined_at).days)) if member.joined_at else inline('CANNOT DETERMINE DATE')} days.\n"
+            f"Since today, user is in the guild since {bold(str((datetime.now() - member.joined_at).days)) if member.joined_at else inline('CANNOT DETERMINE DATE')} days. {'(Edited)' if has_edited_joined_at else ''}\n"
         )
         user_information = self.get_member_dict(member) if get_json else None
         desc = (
@@ -300,7 +324,7 @@ class MyMembers(commands.Cog):
             raise commands.UserFeedbackCheckFailure(
                 "You cannot include JSON information when requesting more than one user."
             )
-        to_del = await ctx.send("Please wait, getting data...")
+        to_del = await ctx.send("Please wait, gathering data...")
         embeds: List[UserInfosResult] = []
         for user in users:
             embeds.append(await self.get_info_for_member(ctx.bot, user, include_json))
@@ -373,6 +397,7 @@ class MyMembers(commands.Cog):
         del infos["json"]
         infos["content"] = warning("This user has left the guild!\n\n") + infos["content"]
         await chan.send(**infos)
+        await self.config.member(member).clear()
 
     @mymembers.group(name="set")
     async def cmd_set(self, ctx: commands.Context):
@@ -446,7 +471,7 @@ class MyMembers(commands.Cog):
 
     @cmd_set.command(name="timestampstyle", aliases=["ts", "timeset", "tss"])
     async def cmd_set_timestampstyle(
-        self, ctx: commands.Context, *, timestamp: TimestampConverter
+        self, ctx: commands.Context, *, timestamp: TimestampStyleConverter
     ):
         """
         Set the timestamp style to show when showing information.
@@ -458,3 +483,39 @@ class MyMembers(commands.Cog):
             f"Success, timestamp style has been set to the letter {inline(timestamp)}. (Example: "
             f"<t:0:{timestamp}>)"
         )
+
+    @mymembers.group(name="edit")
+    async def cmd_edit_member(self, ctx: commands.Context):
+        """
+        Edit a member's data when getting his info.
+        """
+        pass
+
+    @cmd_edit_member.command(name="joinedat", aliases=["ja", "j"])
+    async def cmd_edit_member_joined_at(
+        self,
+        ctx: commands.Context,
+        member_to_edit: discord.Member,
+        joined_at: Optional[TimestampConverter],
+    ):
+        """
+        Edit the member's joined_at.
+        """
+        if joined_at:
+            if joined_at < member_to_edit.created_at:
+                return await ctx.send(
+                    error(
+                        "Impossible! The timestamp you gave me was before the member's creation."
+                    )
+                )
+            if joined_at > datetime.now():
+                return await ctx.send(
+                    error("Impossible! The timestamp you gave me was in the future.")
+                )
+            await self.config.member(member_to_edit).edited_joined_at.set(
+                datetime.timestamp(joined_at)
+            )
+            await ctx.send("Done, this member's joined_at has been edited.")
+        else:
+            await self.config.member(member_to_edit).edited_joined_at.clear()
+            await ctx.send("Done, this member's joined_at's has been reset.")
