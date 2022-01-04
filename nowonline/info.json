@@ -1,0 +1,10 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Cog-Creators/Red-DiscordBot/V3/develop/schema/red_cog.schema.json",
+    "author": ["Predeactor"],
+    "description": "Get alerted about your bot's internal connections status.",
+    "end_user_data_statement": "This cog does not store any data.",
+    "install_msg": "Thank for installing `NowOnline`. Check out commands with `[p]:v`.\n\n**This cog is a work in progress!** You're not getting any support for using it.",
+    "short": "Information about your bot's internal connections status.",
+    "tags": ["manager", "dev", "status", "alert", "bot", "shard", "connect"],
+    "min_python_version": [3, 8, 0]
+}
