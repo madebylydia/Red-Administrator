@@ -302,7 +302,6 @@ class MyMembers(commands.Cog):
         )
 
     @commands.group(name="mymembers", aliases=["mm", "mym"])
-    @commands.admin()
     async def mymembers(self, ctx: commands.Context):
         """
         MyMembers base command.
@@ -400,6 +399,7 @@ class MyMembers(commands.Cog):
         await self.config.member(member).clear()
 
     @mymembers.group(name="set")
+    @commands.admin()
     async def cmd_set(self, ctx: commands.Context):
         """
         Set parameters for MyMembers.
@@ -485,6 +485,7 @@ class MyMembers(commands.Cog):
         )
 
     @mymembers.group(name="edit")
+    @commands.admin()
     async def cmd_edit_member(self, ctx: commands.Context):
         """
         Edit a member's data when getting his info.
