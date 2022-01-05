@@ -4,7 +4,7 @@ from json import dumps
 
 import discord
 from redbot.core import commands
-from redbot.core.utils.chat_formatting import box, inline, pagify, warning
+from redbot.core.utils.chat_formatting import bold, inline, pagify, warning, text_to_file
 from redbot.core.utils.predicates import MessagePredicate
 
 from .abc import MixinMeta
@@ -62,7 +62,7 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         guild_allowance = await self.maybe_get_guild(guild_id)
         has_been_added = await guild_allowance.allow_guild(ctx.author, reason)
         await ctx.send(
-            f"Done. Guild added.\n<{self.generate_invite(guild_id)}>"
+            f"Done. Guild added.\n<{await self.generate_invite(guild_id)}>"
             if has_been_added
             else "Done. Guild was already added."
         )
@@ -78,7 +78,7 @@ class Commands(MixinMeta, metaclass=ABCMeta):
                     "This guild is not allowed. Consider adding it to Falx in order to use the link."
                 )
             )
-        await ctx.send(f"Invitation: <{self.generate_invite(guild_id)}>")
+        await ctx.send(f"Invitation: <{await self.generate_invite(guild_id)}>")
 
     @falx.command(name="remove", aliases=["del", "rem", "rm"])
     async def remove_guild_to_falx(self, ctx: commands.Context, guild_id: int, *, reason: str):
@@ -169,8 +169,30 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         """
         Show Falx's settings.
         """
-        data = box(dumps(await self.config.all(), indent=2), "json")
-        await ctx.send("Note: `null` represent a value that hasn't been set." + data)
+        config = await self.config.all()
+        data = text_to_file(dumps(config, indent=2), filename="config.json")
+
+        if config["notification_channel"]:
+            if notification_channel := self.bot.get_channel(config["notification_channel"]):
+                notification_channel = f"{notification_channel.mention} - {notification_channel.name} ({notification_channel.id})"
+            else:
+                notification_channel = "Cannot found the notification channel, was it deleted?"
+        else:
+            notification_channel = "Not set"
+        embed = discord.Embed(
+            title="Settings of Falx",
+            description=f"This is the settings of Falx, actually, Falx is {bold('enabled' if config['enabled'] else 'disabled')}, you can see more informations below.",
+            color=await self.bot.get_embed_color(ctx.channel),
+        )
+        embed.add_field(name="Enabled", value=str(config["enabled"]))
+        embed.add_field(name="Notification channel", value=notification_channel)
+        if len(config["leaving_message"]) > 1024:
+            embed.add_field(name="Leaving message", value=f"{config['leaving_message'][:1021]}...")
+        else:
+            embed.add_field(name="Leaving message", value=config["leaving_message"])
+        embed.add_field(name="Autoremove", value=str(config["autoremove"]))
+
+        await ctx.send(embed=embed, file=data)
 
     @falx.command(name="leavingmessage")
     async def change_leaving_message(self, ctx: commands.Context, *, new_message: str = None):

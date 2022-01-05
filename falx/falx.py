@@ -34,6 +34,7 @@ DEFAULT_GLOBAL_SETTINGS = {
     "notification_channel": None,
     "leaving_message": DEFAULT_LEAVING_TEXT,
     "autoremove": True,
+    "enabled": True
 }
 
 
@@ -53,7 +54,8 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
         self.config.register_guild(**DEFAULT_GUILD_SETTINGS)
         self.bot: Red = bot
 
-        self._invite_perm: int = 0
+        self.is_enabled: bool = None
+
         super().__init__(*args, **kwargs)
 
     def get_approve_color(self, left_guild: bool) -> discord.Color:
@@ -80,10 +82,8 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
             }
         )
 
-    def generate_invite(self, guild_id: Optional[Union[str, int]] = None) -> str:
-        url = discord.utils.oauth_url(
-            self.bot.user.id, permissions=discord.Permissions(self._invite_perm)
-        )
+    async def generate_invite(self, guild_id: Optional[Union[str, int]] = None) -> str:
+        url = await self.bot.get_invite_url()
         if guild_id:
             url += "&guild_id=" + str(guild_id)
         return url
@@ -176,12 +176,11 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
             guild = guild.id
         return await Allowance.from_guild_id(guild, self.config)
 
-    async def setup_class(self):
-        # noinspection PyProtectedMember
-        self._invite_perm = await self.bot._config.invite_perm()
+    async def cog_load(self):
+        self.is_enabled = await self.config.enabled()
 
 
 def setup(bot: Red):
     falx = Falx(bot)
     bot.add_cog(falx)
-    bot.loop.create_task(falx.setup_class())
+    bot.loop.create_task(falx.cog_load())

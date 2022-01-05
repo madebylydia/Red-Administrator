@@ -19,7 +19,7 @@ class MixinMeta(ABC):
     async def get_leaving_message(self) -> str:
         raise NotImplementedError()
 
-    def generate_invite(self, guild_id: Optional[Union[str, int]] = None) -> str:
+    async def generate_invite(self, guild_id: Optional[Union[str, int]] = None) -> str:
         raise NotImplementedError()
 
     async def generate_leave_embed_for_guild(self, guild: discord.Guild) -> discord.Embed:
