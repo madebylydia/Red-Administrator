@@ -12,6 +12,10 @@ from .falxclass import Allowance
 class MixinMeta(ABC):
     bot: Red
     config: Config
+    is_enabled: bool
+
+    async def should_leave_guild(self, guild: discord.Guild) -> bool:
+        raise NotImplementedError()
 
     def get_approve_color(self, left_guild: bool) -> discord.Color:
         raise NotImplementedError()

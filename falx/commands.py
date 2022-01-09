@@ -228,3 +228,15 @@ class Commands(MixinMeta, metaclass=ABCMeta):
             if activate
             else "Done. I will no longer remove whitelisted guild from Falx when leaving."
         )
+
+    @falx.command(name="enable")
+    async def falx_enable(self, ctx: commands.Context, activate: bool):
+        """
+        Enable or disable Falx.
+        """
+        if self.is_enabled == activate:
+            await ctx.send(f"Falx is already {'enabled' if activate else 'disabled'}.")
+            return
+        self.is_enabled = True
+        await self.config.enabled.set(activate)
+        await ctx.send("Done. Falx is now enabled." if activate else "Done. Falx is now disabled.")

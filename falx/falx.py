@@ -64,6 +64,15 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
         """
         return discord.Color.red() if left_guild else discord.Color.green()
 
+    async def should_leave_guild(self, guild: discord.Guild) -> bool:
+        """
+        Determine if the guild should be left.
+        """
+        if self.is_enabled:
+            guild_info = await Allowance.from_guild(guild, self.config)
+            return guild_info.is_allowed
+        return False
+
     async def get_leaving_message(self) -> str:
         message = await self.config.leaving_message()
 
@@ -92,7 +101,8 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
         channel_id = await self.config.notification_channel()
         if channel_id:
             return self.bot.get_channel(channel_id)
-        return channel_id
+        else:
+            return channel_id
 
     def generate_join_embed_for_guild(
         self, guild: discord.Guild, is_accepted: bool
