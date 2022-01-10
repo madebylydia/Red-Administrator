@@ -1,7 +1,6 @@
 import asyncio
 import base64
 from datetime import datetime
-from random import choice
 from typing import Dict, List, Literal, Optional, TypedDict, Union
 
 import discord
@@ -126,11 +125,7 @@ class RemoteBan(commands.Cog):
         return UserTranslator(users=users, not_found=not_found, errored=errored)
 
     def check_ban_permission_in_guild(self, guild: discord.Guild) -> Optional[bool]:
-        rand_channel = choice(guild.channels)
-        if rand_channel:
-            has_perm = guild.me.permissions_in(rand_channel).ban_members
-            return True if has_perm else False
-        return None
+        return guild.me.guild_permissions.ban_members
 
     async def start_interactive_questionning(self, ctx: commands.Context) -> bool:
         await ctx.author.send(
@@ -181,7 +176,7 @@ class RemoteBan(commands.Cog):
                 "I do not have the necessary permissions to ban users in this guild."
             )
         if guild.owner != ctx_author:
-            if not ctx_author.permissions_in(choice(guild.channels)).administrator:
+            if not ctx_author.guild_permissions.administrator:
                 raise commands.UserFeedbackCheckFailure(
                     "You are not owning this guild or you are not an administrator. I cannot let you do that."
                 )
@@ -425,7 +420,7 @@ class RemoteBan(commands.Cog):
             if not guild:
                 await self.remove_server(guild)
                 continue
-            can_ban = guild.me.permissions_in(choice(guild.channels)).ban_members
+            can_ban = guild.me.guild_permissions.ban_members
             guild_obj.append(
                 TypedGuildList(
                     guild_id=guild_id,
