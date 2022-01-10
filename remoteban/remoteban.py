@@ -176,7 +176,7 @@ class RemoteBan(commands.Cog):
                 "I do not have the necessary permissions to ban users in this guild."
             )
         if guild.owner != ctx_author:
-            if not ctx_author.guild_permissions.administrator:
+            if not guild.get_member(ctx_author.id).guild_permissions.administrator:
                 raise commands.UserFeedbackCheckFailure(
                     "You are not owning this guild or you are not an administrator. I cannot let you do that."
                 )
