@@ -237,6 +237,6 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         if self.is_enabled == activate:
             await ctx.send(f"Falx is already {'enabled' if activate else 'disabled'}.")
             return
-        self.is_enabled = True
+        self.is_enabled = activate
         await self.config.enabled.set(activate)
         await ctx.send("Done. Falx is now enabled." if activate else "Done. Falx is now disabled.")
