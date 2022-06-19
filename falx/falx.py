@@ -70,7 +70,7 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
         """
         if self.is_enabled:
             guild_info = await Allowance.from_guild(guild, self.config)
-            return guild_info.is_allowed
+            return not guild_info.is_allowed
         return False
 
     async def get_leaving_message(self) -> str:
