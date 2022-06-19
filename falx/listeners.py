@@ -18,7 +18,7 @@ class Listeners(MixinMeta, metaclass=ABCMeta):
                 with suppress(discord.HTTPException):
                     await guild.owner.send(await self.get_leaving_message())
             await guild.leave()
-        allowance = Allowance.from_guild(guild)
+        allowance = await Allowance.from_guild(guild, self.config)
         embed = self.generate_join_embed_for_guild(guild, is_accepted=allowance.is_allowed)
         if channel := await self.get_notification_channel():
             await channel.send(embed=embed)
@@ -31,7 +31,7 @@ class Listeners(MixinMeta, metaclass=ABCMeta):
             guild_info = await Allowance.from_guild(guild, self.config)
             if not guild_info.is_allowed:
                 return
-            await guild_info.disallow_guild(str(self.bot.user), "Automatic Removal")
+            await guild_info.disallow_guild(self.bot.user, "Automatic Removal")
         embed = await self.generate_leave_embed_for_guild(guild)
         if channel := await self.get_notification_channel():
             await channel.send(embed=embed)

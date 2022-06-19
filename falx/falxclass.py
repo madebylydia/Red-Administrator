@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TypedDict
+from typing import Optional, TypedDict, Union
 
 import discord
 from redbot.core.config import Config
@@ -44,7 +44,7 @@ class Allowance:
     def __repr__(self) -> str:
         return f"<Allowance guild_id={self.guild_id} is_allowed={self.is_allowed}>"
 
-    async def allow_guild(self, author: discord.User, reason: str) -> bool:
+    async def allow_guild(self, author: Union[discord.User, discord.ClientUser], reason: str) -> bool:
         """
         Allow a guild and save it to Falx.
 
@@ -68,7 +68,7 @@ class Allowance:
             return True
         return False
 
-    async def disallow_guild(self, author: discord.User, reason: str = None):
+    async def disallow_guild(self, author: Union[discord.User, discord.ClientUser], reason: Optional[str] = None):
         """
         Disallow a guild and save it to Falx.
 
@@ -85,7 +85,7 @@ class Allowance:
         """
         if self.is_allowed:
             self.author = str(author)  # This can be the bot
-            self.reason = reason if reason else "Automatic Removal (Guild has been left)"
+            self.reason = reason or "Automatic Removal (Guild has been left)"
             self.added_at = round(datetime.now().timestamp())
             self.is_allowed = False
             await self.save()
@@ -141,7 +141,7 @@ class Allowance:
 
         This will first pull data from Config then return the class.
         """
-        data: GuildData = await config_instance.guild(guild).all()
+        data: GuildData = await config_instance.guild(guild).all()  # type: ignore
         return cls(
             guild_id=guild.id,
             is_allowed=data["is_allowed"],
@@ -159,7 +159,7 @@ class Allowance:
 
         This will first pull data from Config then return the class.
         """
-        data: GuildData = await config_instance.guild_from_id(guild_id).all()
+        data: GuildData = await config_instance.guild_from_id(guild_id).all()  # type: ignore
         return cls(
             guild_id=guild_id,
             is_allowed=data["is_allowed"],

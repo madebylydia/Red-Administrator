@@ -1,6 +1,7 @@
 from abc import ABCMeta
 from datetime import datetime
 from json import dumps
+from typing import Optional
 
 import discord
 from redbot.core import commands
@@ -39,11 +40,8 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         """
         allowance = await self.maybe_get_guild(guild_id)
         is_joined = bool(self.bot.get_guild(guild_id))
-        joined = (
-            f"I am {'still ' if not allowance.is_allowed else ''}operating in this guild."
-            if is_joined
-            else f"I am not operating in this guild{' yet' if allowance.is_allowed else ''}."
-        )
+        joined = f"I am {'' if allowance.is_allowed else 'still '}operating in this guild." if is_joined else f"I am not operating in this guild{' yet' if allowance.is_allowed else ''}."
+
         if allowance.is_brut:
             await ctx.send(f"This guild was never approved before.\n{joined}")
             return
@@ -135,23 +133,22 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         async with ctx.typing():
             for guild in self.bot.guilds:
                 guild_allowance = await Allowance.from_guild(guild, self.config)
-                await guild_allowance.allow_guild(str(self.bot.user), "Automatic addition")
+                await guild_allowance.allow_guild(self.bot.user, "Automatic addition")
                 has_been_added += 1
         await ctx.send(
             f"Done. {has_been_added} guild{'s' if has_been_added != 1 else ''} has been added."
         )
 
     @falx.command(name="setchannel")
-    async def set_channel(self, ctx: commands.Context, *, channel: discord.TextChannel = None):
+    async def set_channel(self, ctx: commands.Context, *, channel: Optional[discord.TextChannel] = None):
         """
         Set the channel to send new guilds notification.
         """
         notification_channel = await self.config.notification_channel()
 
-        if channel == channel:
-            if not notification_channel and (not channel):
-                await ctx.send("No channel are set. Please set one.")
-                return
+        if channel == channel and not notification_channel and (not channel):
+            await ctx.send("No channel are set. Please set one.")
+            return
 
         if channel:
             await self.config.notification_channel.set(channel.id)
@@ -195,7 +192,7 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         await ctx.send(embed=embed, file=data)
 
     @falx.command(name="leavingmessage")
-    async def change_leaving_message(self, ctx: commands.Context, *, new_message: str = None):
+    async def change_leaving_message(self, ctx: commands.Context, *, new_message: Optional[str] = None):
         """
         Change/Reset the message sent to the guild's owner when leaving a guild.
 
