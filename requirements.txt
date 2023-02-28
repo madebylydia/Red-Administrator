@@ -1,4 +1,0 @@
-Red-DiscordBot
-black
-isort
-discord

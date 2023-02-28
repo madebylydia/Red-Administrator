@@ -1,6 +1,22 @@
+[tool.poetry]
+name = "red-administrator"
+version = "0.0.0"
+description = ""
+authors = ["Predeactor <predeactor0@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8.1,<3.10"
+Red-DiscordBot = "^3.4.18"
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.12.0"
+black = "^23.1.0"
+
 [tool.black]
     line-length = 99
-    target-version = ['py38']
+    target-version = ['py39']
 
 [tool.isort]
     multi_line_output = 3
@@ -8,3 +24,8 @@
     force_grid_wrap = 0
     use_parentheses = true
     ensure_newline_before_comments = true
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
