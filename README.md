@@ -29,7 +29,7 @@ This repository has been made in order to help developers contribute. I won't te
 
 ## Follow the project
 
-https://discord.gg/aPVupKAxxP
+https://discord.gg/WdcFUH7ths
 
 Join my Discord server
 
