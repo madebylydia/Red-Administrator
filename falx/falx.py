@@ -34,7 +34,7 @@ DEFAULT_GLOBAL_SETTINGS = {
     "notification_channel": None,
     "leaving_message": DEFAULT_LEAVING_TEXT,
     "autoremove": True,
-    "enabled": True
+    "enabled": True,
 }
 
 
@@ -54,7 +54,7 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
         self.config.register_guild(**DEFAULT_GUILD_SETTINGS)
         self.bot: Red = bot
 
-        self.is_enabled: bool = None
+        self.is_enabled: Optional[bool] = None
 
         super().__init__(*args, **kwargs)
 
@@ -94,15 +94,12 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
     async def generate_invite(self, guild_id: Optional[Union[str, int]] = None) -> str:
         url = await self.bot.get_invite_url()
         if guild_id:
-            url += "&guild_id=" + str(guild_id)
+            url += f"&guild_id={str(guild_id)}"
         return url
 
     async def get_notification_channel(self) -> Optional[discord.TextChannel]:
         channel_id = await self.config.notification_channel()
-        if channel_id:
-            return self.bot.get_channel(channel_id)
-        else:
-            return channel_id
+        return self.bot.get_channel(channel_id) if channel_id else channel_id
 
     def generate_join_embed_for_guild(
         self, guild: discord.Guild, is_accepted: bool
@@ -122,21 +119,20 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
         )
         humans = len([human for human in guild.members if not human.bot])
         bots = len([human for human in guild.members if human.bot])
-        percentage = bots / guild.member_count * 100
+        percentage = bots / guild.member_count * 100 if guild.member_count else None
         embed.add_field(
             name="Members count",
-            value=f"{guild.member_count} members.\n{humans} humans.\n{bots} bots.\nRatio: {round(percentage)}% of bots.",
+            value=f"{guild.member_count} members.\n{humans} humans.\n{bots} bots.\nRatio: {round(percentage) if percentage else 'N/A'}% bots.",
         )
-        embed.set_thumbnail(url=guild.icon_url)
+        if guild.icon:
+            embed.set_thumbnail(url=guild.icon.url)
         if guild.splash:
-            embed.set_image(url=guild.splash_url)
+            embed.set_image(url=guild.splash.url)
         embed.set_footer(
-            text=(
-                "This guild was left automatically as it hasn't been approved."
-                if not is_accepted
-                else "This guild was approved."
-            ),
-            icon_url=self.bot.user.avatar_url,
+            text="This guild was approved."
+            if is_accepted
+            else "This guild was left automatically as it hasn't been approved.",
+            icon_url=self.bot.user.avatar.url if self.bot.user and self.bot.user.avatar else None,
         )
         return embed
 
@@ -189,8 +185,7 @@ class Falx(commands.Cog, Commands, Listeners, name="Falx", metaclass=CompositeMe
     async def cog_load(self):
         self.is_enabled = await self.config.enabled()
 
-
-def setup(bot: Red):
+async def setup(bot: Red):
     falx = Falx(bot)
-    bot.add_cog(falx)
-    bot.loop.create_task(falx.cog_load())
+    await bot.add_cog(falx)
+    await falx.cog_load()

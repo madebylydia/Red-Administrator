@@ -1,6 +1,6 @@
 from .remoteban import RemoteBan
 
 
-def setup(bot):
+async def setup(bot):
     cog = RemoteBan(bot)
-    bot.add_cog(cog)
+    await bot.add_cog(cog)

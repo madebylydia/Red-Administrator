@@ -5,7 +5,6 @@ from .no_class import EVENT_TYPE, Event
 
 
 class Events(MixinMeta, metaclass=ABCMeta):
-
     # Listener: On Connect/Ready
 
     @Cog.listener()

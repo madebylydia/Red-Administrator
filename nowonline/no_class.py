@@ -15,42 +15,42 @@ class EventTypeTyping(TypedDict):
 
 
 class EVENT_TYPE(Enum):
-    ON_CONNECT: dict = {
+    ON_CONNECT = {
         "color": discord.Color.dark_green(),
         "emoji": "🔗",
         "title": Template("$bot is connected."),
     }
-    ON_READY: dict = {
+    ON_READY = {
         "color": discord.Color.green(),
         "emoji": "⚡",
         "title": Template("$bot is ready."),
     }
-    ON_SHARD_CONNECT: dict = {
+    ON_SHARD_CONNECT = {
         "color": discord.Color.dark_purple(),
         "emoji": "🔗",
         "title": Template("Shard $shard_id is connected."),
     }
-    ON_SHARD_READY: dict = {
+    ON_SHARD_READY = {
         "color": discord.Color.purple(),
         "emoji": "⚡",
         "title": Template("Shard $shard_id is ready."),
     }
-    ON_RESUMED: dict = {
+    ON_RESUMED = {
         "color": discord.Color.gold(),
         "emoji": "⏳",
         "title": Template("$bot has resumed his session."),
     }
-    ON_SHARD_RESUMED: dict = {
+    ON_SHARD_RESUMED = {
         "color": discord.Color.gold(),
         "emoji": "⏳",
         "title": Template("Shard $shard_id has resumed his session."),
     }
-    ON_DISCONNECT: dict = {
+    ON_DISCONNECT = {
         "color": discord.Color.red(),
         "emoji": "🛑",
         "title": Template("$bot is disconnected."),
     }
-    ON_SHARD_DISCONNECT: dict = {
+    ON_SHARD_DISCONNECT = {
         "color": discord.Color.red(),
         "emoji": "🛑",
         "title": Template("Shard $shard_id is disconnected."),

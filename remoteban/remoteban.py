@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Literal, Optional, TypedDict, Union
+from typing import Dict, Iterable, List, Literal, Optional, TypedDict, Union
 
 import discord
 from discord.errors import HTTPException
@@ -98,7 +98,7 @@ class RemoteBan(commands.Cog):
         self.__has_accepted_conditions: bool = False
         super().__init__(*args, **kwargs)
 
-    async def translate_users(self, users_list: Union[discord.User, int]) -> UserTranslator:
+    async def translate_users(self, users_list: Iterable[Union[discord.User, int]]) -> UserTranslator:
         not_found = []
         users = []
         errored = {}
@@ -123,29 +123,28 @@ class RemoteBan(commands.Cog):
         return guild.me.guild_permissions.ban_members
 
     async def add_server(self, ctx_author: discord.User, guild: Union[int, discord.Guild]):
-        if isinstance(guild, int):
-            guild = self.bot.get_guild(guild)
-        if not guild:
+        fetched_guild = self.bot.get_guild(guild) if isinstance(guild, int) else guild
+        if not fetched_guild:
             raise commands.UserFeedbackCheckFailure(
                 "I am not in this guild. Make me join it first."
             )
-        if not guild.channels:
+        if not fetched_guild.channels:
             raise LookupError("Cannot check permissions in guild - no channels are available.")
-        if not self.check_ban_permission_in_guild(guild):
+        if not self.check_ban_permission_in_guild(fetched_guild):
             raise commands.UserFeedbackCheckFailure(
                 "I do not have the necessary permissions to ban users in this guild."
             )
         if (
-            guild.owner != ctx_author
-            and not guild.get_member(ctx_author.id).guild_permissions.administrator
+            fetched_guild.owner != ctx_author
+            and not fetched_guild.get_member(ctx_author.id).guild_permissions.administrator
         ):
             raise commands.UserFeedbackCheckFailure(
                 "You are not owning this guild or you are not an administrator. I cannot let you do that."
             )
         async with self.config.servers() as guilds:
-            if guild.id in guilds:
+            if fetched_guild.id in guilds:
                 raise commands.UserFeedbackCheckFailure("This guild is already registered.")
-            guilds.append(guild.id)
+            guilds.append(fetched_guild.id)
         return True
 
     async def add_user(self, user: int):

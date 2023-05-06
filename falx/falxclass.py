@@ -44,7 +44,9 @@ class Allowance:
     def __repr__(self) -> str:
         return f"<Allowance guild_id={self.guild_id} is_allowed={self.is_allowed}>"
 
-    async def allow_guild(self, author: Union[discord.User, discord.ClientUser], reason: str) -> bool:
+    async def allow_guild(
+        self, author: Union[discord.User, discord.ClientUser], reason: str
+    ) -> bool:
         """
         Allow a guild and save it to Falx.
 
@@ -68,7 +70,9 @@ class Allowance:
             return True
         return False
 
-    async def disallow_guild(self, author: Union[discord.User, discord.ClientUser], reason: Optional[str] = None):
+    async def disallow_guild(
+        self, author: Union[discord.User, discord.ClientUser], reason: Optional[str] = None
+    ):
         """
         Disallow a guild and save it to Falx.
 

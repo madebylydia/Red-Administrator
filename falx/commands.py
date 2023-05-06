@@ -5,7 +5,13 @@ from typing import Optional
 
 import discord
 from redbot.core import commands
-from redbot.core.utils.chat_formatting import bold, inline, pagify, warning, text_to_file
+from redbot.core.utils.chat_formatting import (
+    bold,
+    inline,
+    pagify,
+    text_to_file,
+    warning,
+)
 from redbot.core.utils.predicates import MessagePredicate
 
 from .abc import MixinMeta
@@ -13,6 +19,7 @@ from .falxclass import Allowance
 
 
 class Commands(MixinMeta, metaclass=ABCMeta):
+
     @commands.group()
     @commands.is_owner()
     async def falx(self, ctx: commands.Context):
@@ -40,7 +47,11 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         """
         allowance = await self.maybe_get_guild(guild_id)
         is_joined = bool(self.bot.get_guild(guild_id))
-        joined = f"I am {'' if allowance.is_allowed else 'still '}operating in this guild." if is_joined else f"I am not operating in this guild{' yet' if allowance.is_allowed else ''}."
+        joined = (
+            f"I am {'' if allowance.is_allowed else 'still '}operating in this guild."
+            if is_joined
+            else f"I am not operating in this guild{' yet' if allowance.is_allowed else ''}."
+        )
 
         if allowance.is_brut:
             await ctx.send(f"This guild was never approved before.\n{joined}")
@@ -140,7 +151,9 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         )
 
     @falx.command(name="setchannel")
-    async def set_channel(self, ctx: commands.Context, *, channel: Optional[discord.TextChannel] = None):
+    async def set_channel(
+        self, ctx: commands.Context, *, channel: Optional[discord.TextChannel] = None
+    ):
         """
         Set the channel to send new guilds notification.
         """
@@ -192,7 +205,9 @@ class Commands(MixinMeta, metaclass=ABCMeta):
         await ctx.send(embed=embed, file=data)
 
     @falx.command(name="leavingmessage")
-    async def change_leaving_message(self, ctx: commands.Context, *, new_message: Optional[str] = None):
+    async def change_leaving_message(
+        self, ctx: commands.Context, *, new_message: Optional[str] = None
+    ):
         """
         Change/Reset the message sent to the guild's owner when leaving a guild.
 

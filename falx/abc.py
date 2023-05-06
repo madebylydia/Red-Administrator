@@ -41,7 +41,7 @@ class MixinMeta(ABC):
         raise NotImplementedError()
 
 
-class CompositeMetaClass(type(Cog), type(ABC)):
+class CompositeMetaClass(type(Cog), type(ABC)):  # type: ignore
     """
     Allows the metaclass used for proper type detection to coexist with discord.py's metaclass.
     Credit to https://github.com/Cog-Creators/Red-DiscordBot (mod cog) for all mixin stuff.

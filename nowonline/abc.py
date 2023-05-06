@@ -1,6 +1,5 @@
 from abc import (  # Importing ABCMeta in an effort to use it in other files
     ABC,
-    ABCMeta,
     abstractmethod,
 )
 
@@ -12,7 +11,6 @@ from .no_class import Event
 
 
 class MixinMeta(ABC):
-
     bot: Red
     config: Config
 

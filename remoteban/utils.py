@@ -58,9 +58,9 @@ def allowed_to_ban():
         if await ctx.bot.is_owner(ctx.author):
             return True
         await ctx.bot.wait_until_red_ready()
-        is_oki = await Config.get_conf(
+        is_ok = await Config.get_conf(
             None, identifier=5578554655885, force_registration=True, cog_name="RemoteBan"
         ).allowed_users()
-        return True if ctx.author.id in is_oki else False
+        return ctx.author.id in is_ok
 
     return commands.check(predicate)
